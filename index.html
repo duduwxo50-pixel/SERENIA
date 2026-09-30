@@ -117,6 +117,10 @@ button{cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--tan);color:var(--on-tan)}
 .lhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
 .lhead h1{font-size:clamp(2.2rem,5vw,3.4rem);color:var(--tan-deep)}
+.filters{display:grid;gap:14px;margin-bottom:28px;padding:16px 18px;background:var(--surface);border:1px solid var(--line)}
+.frow{display:flex;gap:12px 16px;align-items:center;flex-wrap:wrap}
+.frow .lab{margin:0;min-width:92px}
+.size{border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:8px 10px;border-radius:2px}
 
 /* detalle */
 .pd{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(24px,5vw,64px);align-items:start}
@@ -254,7 +258,7 @@ textarea.json{width:100%;min-height:180px;font-family:ui-monospace,monospace;fon
    "Store" (load / save) por llamadas a las tablas products, categories,
    families y settings. El resto de la página no cambia.
    ===================================================================== */
-const KEY = "serenia_data_v1", CART_KEY = "serenia_cart_v1", SESSION_KEY = "serenia_admin";
+const KEY = "serenia_data_v2", CART_KEY = "serenia_cart_v2", SESSION_KEY = "serenia_admin";
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const cop = n => "$" + Number(n || 0).toLocaleString("es-CO");
@@ -276,33 +280,37 @@ function seed(){
     settings:{
       brand:"SERENIA", whatsapp:"573000000000", whatsappLabel:"+57 300 000 0000",
       announcement:"Envíos gratis por compras superiores a $200.000 (aplican TyC)", freeShipping:200000,
-      heroKicker:"Aroma del mes", heroTitle:"SERENIDAD", heroSub:"20% de descuento", heroImage:"", heroLink:"/categoria/velas",
-      productsTitle:"Nuestros productos", productsText:"Descubre un universo de aromas y sensaciones, desde velas que iluminan y perfuman tus espacios hasta fragancias cautivadoras.",
+      heroKicker:"Aroma del mes", heroTitle:"SERENIDAD", heroSub:"20% de descuento", heroImage:"", heroLink:"/velas",
+      productsTitle:"Nuestras velas", productsText:"Velas aromáticas que iluminan y perfuman tus espacios. Elige por tipo de vela o por aroma.",
       aromasText:"Sabemos el poder que enciende un aroma. Encuentra aquí nuestro portafolio según nuestras categorías olfativas.",
       shipCityName:"Cali", shipCity:"4 a 5 días hábiles", shipOther:"8 a 10 días hábiles",
       instagram:"", facebook:"", tiktok:"", pinterest:"", city:"Cali, Colombia", adminPass:"serenia2026"
     },
     categories:[
-      {id:"velas",name:"Velas",image:""},{id:"fragancias",name:"Fragancias",image:""},{id:"difusores",name:"Difusores",image:""},
-      {id:"pebeteros",name:"Pebeteros",image:""},{id:"room-sprays",name:"Room Sprays",image:""},{id:"accesorios",name:"Accesorios",image:""}
+      {id:"pilar",name:"Velas pilar",image:""},{id:"vaso",name:"Velas en vaso",image:""},
+      {id:"decorativas",name:"Velas decorativas",image:""},{id:"kits",name:"Kits de velas",image:""}
     ],
     families:[
       {id:"frutales",name:"Frutales",color:"#e5b23f"},{id:"florales",name:"Florales",color:"#c9a9e0"},
       {id:"amaderados",name:"Amaderados",color:"#8c6b4a"},{id:"dulces",name:"Dulces",color:"#d3ad6e"},{id:"herbales",name:"Herbales",color:"#9aa84a"}
     ],
     products:[
-      {id:"serenidad",name:"Vela Serenidad",categoryId:"velas",familyId:"herbales",aroma:"Serenidad",colorName:"Lila suave",color:"#b9aed0",
+      {id:"serenidad",name:"Vela Serenidad",categoryId:"pilar",familyId:"herbales",aroma:"Serenidad",colorName:"Lila suave",color:"#b9aed0",
        desc:"Una fragancia que relaja el ambiente con la frescura de la lavanda y la suavidad de la manzanilla.",triangle:"Lavanda, manzanilla y salvia.",featured:true,active:true,images:[],sizeGuide:"",variants:std(34900)},
-      {id:"calma",name:"Vela Calma",categoryId:"velas",familyId:"florales",aroma:"Calma",colorName:"Rosa pálido",color:"#e3c8c2",
+      {id:"calma",name:"Vela Calma",categoryId:"pilar",familyId:"florales",aroma:"Calma",colorName:"Rosa pálido",color:"#e3c8c2",
        desc:"Flores blancas y un fondo limpio de almizcle para un espacio sereno.",triangle:"Té blanco, peonía y almizcle.",featured:true,active:true,images:[],sizeGuide:"",variants:std(34900)},
-      {id:"bienestar",name:"Vela Bienestar",categoryId:"velas",familyId:"herbales",aroma:"Bienestar",colorName:"Verde salvia",color:"#a3bca5",
+      {id:"bienestar",name:"Vela Bienestar",categoryId:"pilar",familyId:"herbales",aroma:"Bienestar",colorName:"Verde salvia",color:"#a3bca5",
        desc:"Notas frescas y verdes que despejan la mente.",triangle:"Eucalipto, menta y cítricos verdes.",featured:true,active:true,images:[],sizeGuide:"",variants:std(34900)},
-      {id:"armonia",name:"Vela Armonía",categoryId:"velas",familyId:"dulces",aroma:"Armonía",colorName:"Marfil",color:"#ecdcb4",
+      {id:"armonia",name:"Vela Armonía",categoryId:"pilar",familyId:"dulces",aroma:"Armonía",colorName:"Marfil",color:"#ecdcb4",
        desc:"Una fragancia cálida y acogedora que mezcla la suavidad de la vainilla con la profundidad del sándalo.",triangle:"Vainilla dulce, sándalo y ámbar.",featured:true,active:true,images:[],sizeGuide:"",variants:std(36900)},
-      {id:"elegancia",name:"Vela Elegancia",categoryId:"velas",familyId:"amaderados",aroma:"Elegancia",colorName:"Taupe",color:"#9a8d7d",
+      {id:"elegancia",name:"Vela Elegancia",categoryId:"pilar",familyId:"amaderados",aroma:"Elegancia",colorName:"Taupe",color:"#9a8d7d",
        desc:"Maderas nobles y un toque de higo para ambientes sofisticados.",triangle:"Cedro, higo y té negro.",featured:false,active:true,images:[],sizeGuide:"",variants:std(36900)},
-      {id:"spray-lavanda",name:"Room Spray Lavanda",categoryId:"room-sprays",familyId:"florales",aroma:"Lavanda",colorName:"Transparente",color:"#cdbfe0",
-       desc:"Fragancia ambiente y para lencería.",triangle:"Lavanda y vainilla.",featured:false,active:true,images:[],sizeGuide:"",variants:[V("250 ml",250,28900)]}
+      {id:"serenidad-vaso",name:"Vela en Vaso Serenidad",categoryId:"vaso",familyId:"herbales",aroma:"Serenidad",colorName:"Vidrio esmerilado",color:"#d6d0e4",
+       desc:"La misma fragancia relajante en un vaso de vidrio con tapa de madera, lista para regalar.",triangle:"Lavanda, manzanilla y salvia.",featured:true,active:true,images:[],sizeGuide:"",variants:[V("Vaso 34 · 200 g",200,41900),V("Vaso 79 · 350 g",350,49900)]},
+      {id:"armonia-vaso",name:"Vela en Vaso Armonía",categoryId:"vaso",familyId:"dulces",aroma:"Armonía",colorName:"Vidrio transparente",color:"#efe2c2",
+       desc:"Vainilla y sándalo en vaso transparente con tapa.",triangle:"Vainilla dulce, sándalo y ámbar.",featured:false,active:true,images:[],sizeGuide:"",variants:[V("Vaso 34 · 200 g",200,43900),V("Vaso 79 · 350 g",350,52900)]},
+      {id:"kit-calma",name:"Kit Calma",categoryId:"kits",familyId:"florales",aroma:"Calma",colorName:"Rosa y marfil",color:"#e8d3cc",
+       desc:"Dos velas pequeñas de Calma y Serenidad en una caja de regalo.",triangle:"Té blanco, peonía y lavanda.",featured:false,active:true,images:[],sizeGuide:"",variants:[V("Caja x 2 velas",660,64900)]}
     ]
   };
 }
@@ -338,14 +346,14 @@ const catPic = c => {
 };
 
 /* ---------- navegación ---------- */
-let path = "/", listFilter = "", searchOpen = false, menuOpen = false, cartOpen = false;
+let path = "/", listFilter = "", listType = "", listSort = "", searchOpen = false, menuOpen = false, cartOpen = false;
 function parse(h){ return (h||"").replace(/^#/,"") || "/"; }
 function go(p){
   if(p === path){ render(); return; }
   path = p; try{ history.replaceState(null,"","#"+p) }catch(e){ try{ location.hash = p }catch(_e){} }
-  listFilter = ""; menuOpen = false; render(); window.scrollTo(0,0);
+  listFilter = ""; listType = ""; listSort = ""; menuOpen = false; render(); window.scrollTo(0,0);
 }
-window.addEventListener("hashchange",()=>{ const p = parse(location.hash); if(p !== path){ path = p; listFilter=""; menuOpen=false; render(); window.scrollTo(0,0); } });
+window.addEventListener("hashchange",()=>{ const p = parse(location.hash); if(p !== path){ path = p; listFilter=""; listType=""; listSort=""; menuOpen=false; render(); window.scrollTo(0,0); } });
 const link = (p, inner, cls="") => `<a class="${cls}" href="#${esc(p)}" data-go="${esc(p)}">${inner}</a>`;
 
 /* ---------- íconos ---------- */
@@ -363,7 +371,7 @@ function header(){
   <div class="top"><div class="wrap">
     <button class="ico burger" data-act="menu" aria-label="Abrir menú">${I.menu}</button>
     ${link("/",esc(s.brand),"logo")}
-    <nav class="dnav" aria-label="Principal">${D.categories.slice(0,5).map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}${link("/aromas","Aromas")}</nav>
+    <nav class="dnav" aria-label="Principal">${link("/velas","Todas las velas")}${D.categories.slice(0,4).map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}${link("/aromas","Aromas")}</nav>
     <button class="ico" data-act="search" aria-label="Buscar">${I.search}</button>
     <button class="ico" data-act="cart" aria-label="Abrir carrito">${I.bag}${n?`<span class="badge">${n}</span>`:""}</button>
   </div></div>
@@ -376,7 +384,7 @@ function footer(){
     <div class="fgrid">
       <div><div class="logo" style="font-size:1.6rem">${esc(s.brand)}</div><p class="note" style="margin-top:8px">Velas aromáticas para habitar la calma.</p>
         <form class="news" id="news"><label class="sr" for="nemail">Correo electrónico</label><input id="nemail" type="email" placeholder="Correo electrónico" required><button type="submit">Enviar</button></form></div>
-      <div><h4>Comprar</h4>${D.categories.map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}</div>
+      <div><h4>Velas</h4>${link("/velas","Todas las velas")}${D.categories.map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}${link("/aromas","Por aroma")}</div>
       <div><h4>Ayuda</h4>${link("/envios","Tiempos de envío")}<a href="https://wa.me/${esc(s.whatsapp)}" target="_blank" rel="noopener">Contáctanos</a><span class="note">WhatsApp: ${esc(s.whatsappLabel)}</span>${soc?`<h4 style="margin-top:14px">Redes</h4>${soc}`:""}</div>
     </div>
     <div class="copy"><span>© ${new Date().getFullYear()} ${esc(s.brand)} · ${esc(s.city)}</span>${link("/admin","Administrador")}</div>
@@ -398,7 +406,8 @@ function vHome(){
       <div class="in"><span class="k">${esc(s.heroKicker)}</span><h1>${esc(s.heroTitle)}</h1><span class="s">${esc(s.heroSub)}</span>
       ${hasImg?"":`<div style="width:110px">${art("#b9aed0")}</div>`}</div></a>
     <section class="sec wrap"><div class="sec-t"><h2>${esc(s.productsTitle)}</h2><p>${esc(s.productsText)}</p></div>
-      <div class="cats">${D.categories.map(c=>`<a class="cat" href="#/categoria/${esc(c.id)}" data-go="/categoria/${esc(c.id)}"><div class="oval">${catPic(c)}</div><span>${esc(c.name)} →</span></a>`).join("")}</div></section>
+      <div class="cats">${D.categories.map(c=>`<a class="cat" href="#/categoria/${esc(c.id)}" data-go="/categoria/${esc(c.id)}"><div class="oval">${catPic(c)}</div><span>${esc(c.name)} →</span></a>`).join("")}</div>
+      <div style="text-align:center;margin-top:36px">${link("/velas","Ver todas las velas","btn")}</div></section>
     <section class="band"><div class="sec wrap"><div class="sec-t"><span class="eyebrow" style="color:#fff">Nuestros</span><h2>Aromas</h2><p>${esc(s.aromasText)}</p></div>
       <div class="fams">${D.families.map(f=>`<a class="fam" href="#/aroma/${esc(f.id)}" data-go="/aroma/${esc(f.id)}"><i style="background:${esc(f.color)}"></i><span>${esc(f.name)}</span></a>`).join("")}</div></div></section>
     <section class="sec wrap"><div class="sec-t"><h2>Los más vendidos</h2></div><div class="grid">${best.map(card).join("")}</div></section>
@@ -409,11 +418,19 @@ function vHome(){
 }
 function vList(title, items, opts={}){
   const fams = opts.filterFams ? D.families.filter(f=>items.some(p=>p.familyId===f.id)) : [];
-  const shown = listFilter ? items.filter(p=>p.familyId===listFilter) : items;
+  const types = opts.filterTypes ? D.categories.filter(c=>items.some(p=>p.categoryId===c.id)) : [];
+  let shown = items.filter(p=>(!listFilter||p.familyId===listFilter)&&(!listType||p.categoryId===listType));
+  if(listSort==="asc") shown = [...shown].sort((a,b)=>minPrice(a)-minPrice(b));
+  if(listSort==="desc") shown = [...shown].sort((a,b)=>minPrice(b)-minPrice(a));
+  const chips = (kind,label,arr,cur) => arr.length>1 ? `<div class="frow"><span class="lab">${label}</span><div class="chips" role="group" aria-label="${label}"><button class="chip" data-act="fil" data-kind="${kind}" data-id="" aria-pressed="${!cur}">Todos</button>${arr.map(x=>`<button class="chip" data-act="fil" data-kind="${kind}" data-id="${esc(x.id)}" aria-pressed="${cur===x.id}">${esc(x.name)}</button>`).join("")}</div></div>` : "";
+  const hasF = fams.length>1 || types.length>1;
   return `<div class="wrap"><div class="crumbs">${link("/","Inicio")} / ${esc(title)}</div>
-    <div class="lhead"><h1>${esc(title)}</h1>${fams.length?`<div class="chips" role="group" aria-label="Filtrar por aroma"><button class="chip" data-act="fil" data-id="" aria-pressed="${!listFilter}">Todos</button>${fams.map(f=>`<button class="chip" data-act="fil" data-id="${esc(f.id)}" aria-pressed="${listFilter===f.id}">${esc(f.name)}</button>`).join("")}</div>`:""}</div>
-    ${shown.length?`<div class="grid">${shown.map(card).join("")}</div>`:`<p class="empty">${opts.empty||"Aún no hay productos aquí."}</p>`}</div>`;
+    <div class="lhead"><h1>${esc(title)}</h1><span class="note">${shown.length} ${shown.length===1?"vela":"velas"}</span></div>
+    ${hasF||items.length>1?`<div class="filters">${chips("type","Tipo de vela",types,listType)}${chips("fam","Aroma",fams,listFilter)}
+      <div class="frow"><label class="lab" for="lsort">Ordenar</label><select id="lsort" class="size"><option value="" ${!listSort?"selected":""}>Destacados</option><option value="asc" ${listSort==="asc"?"selected":""}>Precio: menor a mayor</option><option value="desc" ${listSort==="desc"?"selected":""}>Precio: mayor a menor</option></select></div></div>`:""}
+    ${shown.length?`<div class="grid">${shown.map(card).join("")}</div>`:`<p class="empty">${opts.empty||"No hay velas con esos filtros."}</p>`}</div>`;
 }
+const vAll = () => vList("Todas las velas", activeProducts(), {filterFams:true, filterTypes:true});
 const vCategory = id => { const c = cat(id); return c ? vList(c.name, activeProducts().filter(p=>p.categoryId===id), {filterFams:true}) : vNotFound(); };
 const vFamily = id => { const f = fam(id); return f ? vList("Aromas "+f.name.toLowerCase(), activeProducts().filter(p=>p.familyId===id)) : vNotFound(); };
 function vAromas(){
@@ -458,7 +475,7 @@ function vProduct(id){
   </div>
   <section class="sec" style="padding-block:40px 0"><div class="sec-t"><h2 style="font-size:2rem">Descripción</h2></div>
     <div class="spec" style="max-width:520px;margin-inline:auto">
-      ${p.colorName?`<div><b>Color:</b> ${esc(p.colorName)}</div>`:""}${p.aroma?`<div><b>Aroma:</b> ${esc(p.aroma)}</div>`:""}${c?`<div><b>Tipo:</b> ${esc(c.name)}</div>`:""}${f?`<div><b>Categoría:</b> ${esc(f.name)}</div>`:""}</div></section>
+      ${p.colorName?`<div><b>Color:</b> ${esc(p.colorName)}</div>`:""}${p.aroma?`<div><b>Aroma:</b> ${esc(p.aroma)}</div>`:""}${c?`<div><b>Tipo de vela:</b> ${esc(c.name)}</div>`:""}${f?`<div><b>Familia olfativa:</b> ${esc(f.name)}</div>`:""}</div></section>
   <section class="sec" style="padding-block:40px 0"><div class="guide"><h3 style="text-align:center">Guía de tamaños</h3>
     ${p.sizeGuide?`<img src="${esc(p.sizeGuide)}" alt="Guía de tamaños">`:""}
     ${p.variants.length?`<div class="tw"><table><thead><tr><th>Medida (diámetro x alto)</th><th>Peso</th><th>Precio</th></tr></thead><tbody>${p.variants.map(x=>`<tr><td>${esc(x.label)}</td><td>${x.weight?esc(x.weight)+" g":"—"}</td><td>${cop(x.price)}</td></tr>`).join("")}</tbody></table></div>`:""}</div></section>
@@ -504,7 +521,7 @@ function drawerHtml(){
     <p class="note">Se abre WhatsApp con tu pedido escrito. Envíalo desde allí y te confirmamos disponibilidad, pago y envío.</p></div></aside>`;
 }
 function menuHtml(){
-  return `<div class="menu"><nav aria-label="Menú">${link("/","Inicio")}${D.categories.map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}${link("/aromas","Aromas")}${link("/envios","Envíos")}
+  return `<div class="menu"><nav aria-label="Menú">${link("/","Inicio")}${link("/velas","Todas las velas")}${D.categories.map(c=>link("/categoria/"+c.id,esc(c.name))).join("")}${link("/aromas","Aromas")}${link("/envios","Envíos")}
     <a href="https://wa.me/${esc(D.settings.whatsapp)}" target="_blank" rel="noopener">Contacto</a></nav><div class="sc" data-act="closemenu"></div></div>`;
 }
 function renderLayer(){ $("#layer").innerHTML = (cartOpen?drawerHtml():"") + (menuOpen?menuHtml():""); }
@@ -516,7 +533,7 @@ function setAdmin(v){ try{ v?sessionStorage.setItem(SESSION_KEY,"1"):sessionStor
 function vAdmin(){
   if(!isAdmin()) return `<div class="wrap"><form class="login panel" id="alogin"><h1>Administrador</h1><p class="note">Ingresa la clave para gestionar productos, categorías y ajustes.</p>
     <div class="fld"><label for="apass">Clave</label><input id="apass" type="password" autocomplete="current-password"></div><button class="btn" type="submit">Entrar</button>${link("/","Volver a la tienda")}</form></div>`;
-  const tabs = [["productos","Productos"],["categorias","Categorías"],["aromas","Aromas"],["ajustes","Ajustes"],["datos","Datos"]];
+  const tabs = [["productos","Productos"],["categorias","Tipos de vela"],["aromas","Aromas"],["ajustes","Ajustes"],["datos","Datos"]];
   return `<div class="wrap adm"><div class="atop"><h1>Administrador</h1><div class="acts">${link("/","Ver tienda","btn alt sm")}<button class="btn alt sm" data-act="logout">Salir</button></div></div>
    <div class="tabs" role="tablist">${tabs.map(t=>`<button role="tab" data-act="atab" data-id="${t[0]}" aria-selected="${aTab===t[0]}">${t[1]}</button>`).join("")}</div>
    ${aTab==="productos"?(draft?aForm():aList()):aTab==="categorias"?aCats():aTab==="aromas"?aFams():aTab==="ajustes"?aSettings():aData()}</div>`;
@@ -528,7 +545,7 @@ function aList(){
    <p class="note">${D.products.length} productos · ${D.products.filter(p=>p.active!==false).length} visibles en la tienda.</p>
    <div class="plist">${items.map(p=>`<div class="prow"><div class="t">${pic(p)}</div>
      <div style="min-width:0"><b>${esc(p.name)}</b><span class="pill ${p.active!==false?"on":"off"}">${p.active!==false?"Visible":"Oculto"}</span>${p.featured?`<span class="pill on">Destacado</span>`:""}
-       <div class="m">${esc((cat(p.categoryId)||{}).name||"Sin categoría")} · ${p.variants.length} medidas · desde ${cop(minPrice(p))}</div></div>
+       <div class="m">${esc((cat(p.categoryId)||{}).name||"Sin tipo")} · ${p.variants.length} medidas · desde ${cop(minPrice(p))}</div></div>
      <div class="acts"><button class="btn alt sm" data-act="pedit" data-id="${esc(p.id)}">Editar</button><button class="btn alt sm" data-act="pdup" data-id="${esc(p.id)}">Duplicar</button>
        ${delId===p.id?`<button class="btn danger sm" data-act="pdel2" data-id="${esc(p.id)}">¿Eliminar?</button>`:`<button class="btn danger sm" data-act="pdel" data-id="${esc(p.id)}">Eliminar</button>`}</div></div>`).join("")||`<p class="empty">No hay productos.</p>`}</div></div>`;
 }
@@ -537,9 +554,9 @@ function aForm(){
   return `<form class="panel" id="pform"><div class="atop" style="margin:0"><h2>${d._new?"Nuevo producto":"Editar producto"}</h2></div>
   <div class="row2">
     <div class="fld"><label for="f-name">Nombre</label><input id="f-name" data-f="name" value="${esc(d.name)}" required></div>
-    <div class="fld"><label for="f-cat">Tipo de producto</label><select id="f-cat" data-f="categoryId">${D.categories.map(c=>`<option value="${esc(c.id)}" ${d.categoryId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
-    <div class="fld"><label for="f-fam">Categoría olfativa</label><select id="f-fam" data-f="familyId"><option value="">—</option>${D.families.map(f=>`<option value="${esc(f.id)}" ${d.familyId===f.id?"selected":""}>${esc(f.name)}</option>`).join("")}</select></div>
-    <div class="fld"><label for="f-aroma">Aroma</label><input id="f-aroma" data-f="aroma" value="${esc(d.aroma)}"></div>
+    <div class="fld"><label for="f-cat">Tipo de vela</label><select id="f-cat" data-f="categoryId">${D.categories.map(c=>`<option value="${esc(c.id)}" ${d.categoryId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
+    <div class="fld"><label for="f-fam">Aroma (familia olfativa)</label><select id="f-fam" data-f="familyId"><option value="">—</option>${D.families.map(f=>`<option value="${esc(f.id)}" ${d.familyId===f.id?"selected":""}>${esc(f.name)}</option>`).join("")}</select></div>
+    <div class="fld"><label for="f-aroma">Nombre del aroma</label><input id="f-aroma" data-f="aroma" value="${esc(d.aroma)}"></div>
     <div class="fld"><label for="f-cn">Color (nombre)</label><input id="f-cn" data-f="colorName" value="${esc(d.colorName)}" placeholder="Marfil"></div>
     <div class="fld"><label for="f-col">Color en la tienda (si no hay foto)</label><input id="f-col" type="color" data-f="color" value="${esc(d.color||"#c9b5a0")}"></div>
   </div>
@@ -559,14 +576,14 @@ function aForm(){
   <div class="acts" style="justify-content:flex-start"><button class="btn" type="submit">Guardar producto</button><button type="button" class="btn alt" data-act="pcancel">Cancelar</button></div></form>`;
 }
 function aCats(){
-  return `<div class="panel"><p class="note">Son los tipos de producto del menú y de “Nuestros productos”. Toca el recuadro para subir una foto; si no hay, se usa la del primer producto.</p>
+  return `<div class="panel"><p class="note">Son los tipos de vela (pilar, en vaso, kits…) que aparecen en el menú, en el inicio y como filtro. Toca el recuadro para subir una foto; si no hay, se usa la del primer producto.</p>
    ${D.categories.map((c,i)=>`<div class="lrow c"><label class="cimg">${c.image?`<img src="${esc(c.image)}" alt="">`:"Foto"}<input type="file" accept="image/*" class="sr" data-up="catimg" data-i="${i}"></label>
     <input type="text" data-list="categories" data-i="${i}" data-k="name" value="${esc(c.name)}" aria-label="Nombre de categoría">
     <button class="btn alt sm" data-act="lmove" data-list="categories" data-i="${i}" aria-label="Subir">↑</button><button class="btn danger sm" data-act="ldel" data-list="categories" data-i="${i}">Quitar</button></div>`).join("")}
-   <div><button class="btn alt sm" data-act="ladd" data-list="categories">+ Agregar tipo</button></div></div>`;
+   <div><button class="btn alt sm" data-act="ladd" data-list="categories">+ Agregar tipo de vela</button></div></div>`;
 }
 function aFams(){
-  return `<div class="panel"><p class="note">Son las categorías olfativas (Frutales, Florales…). El color aparece en la franja de la sección de aromas.</p>
+  return `<div class="panel"><p class="note">Son las familias de aroma (Frutales, Florales…). Sirven como filtro y el color aparece en la franja de la sección de aromas.</p>
    ${D.families.map((f,i)=>`<div class="lrow"><input type="text" data-list="families" data-i="${i}" data-k="name" value="${esc(f.name)}" aria-label="Nombre">
     <input type="color" data-list="families" data-i="${i}" data-k="color" value="${esc(f.color)}" aria-label="Color" style="width:60px;height:40px;padding:2px">
     <button class="btn danger sm" data-act="ldel" data-list="families" data-i="${i}">Quitar</button></div>`).join("")}
@@ -574,7 +591,7 @@ function aFams(){
 }
 const SET = [
   ["Marca y contacto",[["brand","Nombre de la marca"],["whatsapp","WhatsApp con indicativo, sin + (573001234567)"],["whatsappLabel","WhatsApp como se muestra"],["city","Ciudad (pie de página)"],["adminPass","Clave del administrador","password"]]],
-  ["Banner principal",[["heroKicker","Texto pequeño (Aroma del mes)"],["heroTitle","Título grande (AMOR)"],["heroSub","Texto inferior (20% de descuento)"],["heroLink","Al tocar, ir a (ej. /categoria/velas)"],["heroImage","Imagen de fondo","img"]]],
+  ["Banner principal",[["heroKicker","Texto pequeño (Aroma del mes)"],["heroTitle","Título grande (AMOR)"],["heroSub","Texto inferior (20% de descuento)"],["heroLink","Al tocar, ir a (ej. /velas o /aroma/dulces)"],["heroImage","Imagen de fondo","img"]]],
   ["Textos de la portada",[["announcement","Barra superior"],["productsTitle","Título de productos"],["productsText","Texto de productos","area"],["aromasText","Texto de aromas","area"]]],
   ["Envíos",[["freeShipping","Envío gratis desde (COP)","number"],["shipCityName","Ciudad de despacho"],["shipCity","Tiempo en esa ciudad"],["shipOther","Tiempo a otras ciudades"]]],
   ["Redes sociales (enlaces completos)",[["instagram","Instagram"],["facebook","Facebook"],["tiktok","TikTok"],["pinterest","Pinterest"]]]
@@ -601,6 +618,7 @@ function render(){
   if(r==="") view = vHome();
   else if(r==="categoria") view = vCategory(parts[1]);
   else if(r==="aroma") view = vFamily(parts[1]);
+  else if(r==="velas") view = vAll();
   else if(r==="aromas") view = vAromas();
   else if(r==="producto") view = vProduct(parts[1]);
   else if(r==="buscar") view = vSearch(decodeURIComponent(parts.slice(1).join("/")));
@@ -638,7 +656,7 @@ document.addEventListener("click", e => {
     case "search": searchOpen = !searchOpen; render(); break;
     case "cart": cartOpen = true; renderLayer(); break;
     case "closecart": cartOpen = false; renderLayer(); break;
-    case "fil": listFilter = d.id; render(); break;
+    case "fil": if(d.kind==="type") listType = d.id; else listFilter = d.id; render(); break;
     case "img": { const p = prod(sel.id); sel.img = +d.i; $("#gmain").innerHTML = `<img src="${esc(p.images[sel.img])}" alt="${esc(p.name)}">`;
       document.querySelectorAll(".thumbs button").forEach((t,i)=>t.setAttribute("aria-current", i===sel.img)); break; }
     case "var": { const p = prod(sel.id); sel.vid = d.id; const v = p.variants.find(x=>x.id===d.id); $("#pprice").textContent = cop(v.price);
@@ -680,7 +698,9 @@ document.addEventListener("input", e => {
   if(t.id==="bname"||t.id==="bcity"||t.id==="baddr"){ buyer[t.id.slice(1)] = t.value; const w=$("#wabtn"); if(w) w.href = waLink(); }
 });
 document.addEventListener("change", async e => {
-  const t = e.target; if(!t.dataset.up) return;
+  const t = e.target;
+  if(t.id==="lsort"){ listSort = t.value; render(); return; }
+  if(!t.dataset.up) return;
   const files = [...t.files]; if(!files.length) return;
   try{
     if(t.dataset.up==="images"){ for(const f of files) draft.images.push(await readImg(f)); render(); }
